@@ -1,0 +1,123 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+
+{% block title %}Lista de materiais (editando){% endblock %}
+
+{% block content %}
+<!-- Utils -->
+<script src="{% static 'js/utils/input.js' %}"></script>
+
+<script>
+    urls["renderResourceList"] = "{% url 'renderResourceList' resourceList.creator.username resourceList.id %}";
+    urls["addResource"] = "{% url 'addResource' resourceList.creator.username resourceList.id %}";
+    urls["deleteResourceList"] = "{% url 'deleteResourceList' resourceList.id %}";
+    urls["renderUserResourceLists"] = "{% url 'renderUserResourceLists' request.user.username %}"
+
+    var csrfmiddlewaretoken = '{{ csrf_token }}';
+
+    var resourceList = serializedDjangoToJsonList("{{ jsonResourceList | escapejs}}")[0];
+    var resources = serializedDjangoToJsonList("{{ jsonResources | escapejs}}");
+    var categories = JSON.parse("{{ jsonCategories | escapejs}}");
+
+</script>
+
+<div id="editing-resource-list" v-cloak>
+    <div class="container-fluid">
+        <div class="row mt-5 updated-list-row">
+            <div class="col-lg-3"></div>
+
+            <div class="col-lg-6">
+                <h3>
+                    <b class="float-left mb-2">Título</b>
+                    <div class="btn-group float-right expand-edit-list-menu">
+                        <i class="fas fa-ellipsis-v text-muted px-2" data-toggle="dropdown" aria-expanded="false"></i>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="" @click="deleteResourceList">
+                                Excluir Lista
+                            </a>
+                        </div>
+                    </div>
+                </h3>
+                <input id="edit-list-title" v-model="resourceList.title" class="edit-list-text-input"
+                    placeholder="Insira o título da lista" spellcheck="false" autocomplete="off" />
+
+                <div class="mt-4">
+                    <div  @mouseleave="hideAllCategories()">
+                        <button v-if="!resourceList.category" @click="showCategories = !showCategories"
+                        class="btn btn-green">Categoria</button>
+                        <span v-else @click="showCategories = !showCategories" class="pointer">Categoria: 
+                            <b class="text-green">[[ resourceList.category.name ]]</b>
+                        </span>
+                        <div v-if="showCategories" style="position: absolute; z-index: 5;">
+                            <div v-for="(categories, hierarchyIndex) in visibleCategories"
+                            class="categories bg-white border py-2 d-inline-block align-top h-100">
+                                <div v-for="category in categories"
+                                @click="resourceList.category = category"
+                                @mouseover="showSubcategories(category, hierarchyIndex)"
+                                class="category-option px-3 py-1 pointer d-flex justify-content-between">
+                                    <span >[[ category.name ]]</span>
+                                    
+                                    <i v-if="category.subcategories && category.subcategories.length > 0" class="fas fa-caret-right ml-3" style="position: relative; top: 4px;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="mt-4"><b>Introdução</b></h3>
+                <textarea v-model="resourceList.description" class="edit-list-textarea " onkeyup="autogrow(this)"
+                    placeholder="Ex: Nesta lista de materiais, você irá obter as noções básicas de programação usando Python."
+                    rows="4" spellcheck="false"></textarea>
+
+                <h3 class="mt-4"><b>Público alvo / pré-requisitos</b></h3>
+                <textarea v-model="resourceList.requisites" class="edit-list-textarea " onkeyup="autogrow(this)"
+                    placeholder="Ex: Inglês básico, computador com Windows 10..." rows="4"
+                    spellcheck="false"></textarea>
+
+
+                <h3 class="mt-4"><b>Materiais e orientações</b></h3>
+                <edit-resource v-for="resource in resources" v-bind:resource="resource" v-bind:resources="resources"
+                    v-bind:key="resource.position" v-on:paste-url="onPasteUrl" v-on:delete-resource="deleteResource"
+                    v-on:correct-resources-positions="correctResourcePositions">
+                </edit-resource>
+
+                <button type="button" @click="addResource" class="add-resource-btn btn btn-block mt-3 bg-white">
+                    Nova recomendação
+                </button>
+            </div>
+
+            <div class="col-lg-3"></div>
+
+        </div>
+    </div>
+
+    <div class="fixed-bottom container-fluid bg-white shadow p-2">
+        <div class="row">
+            <div class="col-lg-3"></div>
+
+            <div class="col-lg-6">
+                <div class="custom-control custom-checkbox d-inline ml-2 float-left is-public-btn">
+                    <input type="checkbox" v-model="resourceList.isPublic" class="custom-control-input"
+                        id="is-public-input">
+                    <label class="custom-control-label" for="is-public-input">
+                        Público
+                        <i class="fas fa-globe-americas ml-1"></i>
+                    </label>
+                </div>
+
+                <div class="float-right mr-3">
+                    <a @click.prevent="cancelEditing" href="#">Cancelar</a>
+                    <button @click="saveChanges" class="btn btn-dark ml-4">Salvar</button>
+                </div>
+
+            </div>
+            <div class="col-lg-3"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/specific/editList.js' %}"></script>
+
+
+{% endblock %}

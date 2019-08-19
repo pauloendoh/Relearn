@@ -1,0 +1,28 @@
+{% load staticfiles %}
+
+{% if SignUpForm %}
+<div id="auth-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create an Account</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="signup-form" v-on:submit.prevent="signUp" action="{% url 'createUser' %}" method="POST">
+                    {% csrf_token %}
+                    {{ SignUpForm }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" form="signup-form" value="Sign Up" class="btn btn-primary" /></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/modals.js' %}"></script>
+
+{% endif %}

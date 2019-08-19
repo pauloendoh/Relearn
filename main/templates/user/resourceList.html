@@ -1,0 +1,153 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block title %}{{ resourceList.title }}{% endblock %}
+
+{% block content %}
+
+
+
+<script>
+    var csrfmiddlewaretoken = '{{ csrf_token }}';
+
+    var resourceList = serializedDjangoToJsonList("{{ jsonResourceList | escapejs}}")[0];
+    var resources = serializedDjangoToJsonList("{{ jsonResources | escapejs}}");
+    var ratings = serializedDjangoToJsonList("{{ jsonRatings | escapejs}}");
+    var isBookmarked = false;
+    var avgRating = parseFloat("{{ avgRating }}")
+
+    urls.updateRating = "{% url 'updateRating' %}"
+
+    // Para cada material, ver se o usuário já deu nota.
+    for (var i = 0; i < resources.length; i++) {
+        var rating = null;
+        for (var j = 0; j < ratings.length; j++) {
+            if (resources[i].id == ratings[j].resource) {
+                rating = ratings[j].rating;
+                break;
+            }
+        }
+        resources[i]["userRating"] = rating;
+        resources[i]["showRatingOptions"] = false;
+        resources[i]["hideRatingOptions"] = true;
+
+    }
+</script>
+
+{% if isBookmarked %}
+<script>isBookmarked = true;</script>
+{% endif %}
+
+<div id="resource-list" v-cloak>
+    <div class="container-fluid">
+        <div class="row mt-5 updated-list-row">
+            <div  class="col-lg-3">
+                <div v-if="sidebarIsOpen" class="px-5" style="position: fixed; max-width: inherit;">
+                    <div class="rounded border py-3 bg-white" style="max-height: 600;overflow-y: auto;">
+                        <div v-for="(resource, index) in resources" @click.prevent="goToResourcePosition('#resource-item-' + resource.position)" class="sidebar-resource px-3 py-3">
+                            <div class="d-inline h-100 d-flex align-content-center" style="min-width: 30px;">
+                                <i v-if="resource.userRating == null" class="far fa-circle"></i>
+                                <i v-else-if="resource.userRating == 0" class="far fa-check-circle"></i>
+                                <span v-else-if="resource.userRating == 1">☹️</span>
+                                <span v-else-if="resource.userRating == 2">😐</span>
+                                <span v-else-if="resource.userRating == 3">😄</span>
+                            </div>
+                            <div class="d-inline h-100">
+                                [[ resource.title ]]
+                            </div>
+
+                        </div>
+                    </div>
+                    <div style="background-color: lightgray;
+                    padding: 10px;
+                    text-align: center;
+                    font-weight: 500;
+                    font-size: 24px;
+                    cursor: default;" >
+                        <span data-toggle="tooltip" data-placement="bottom" :title="nConcluded + '/' + resources.length + ' concluídos'">
+                            [[ conclusionPct ]]% 
+                        </span>
+                       
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg">
+
+                <h3>
+                    <b>[[resourceList.title]]</b>
+                    <a v-if="authenticatedUser.id == resourceList.creator[0]"
+                        :href="getEditListUrl(authenticatedUser.username, resourceList.id)" class="edit-list-link">
+                        (Editar)
+                    </a>
+                </h3>
+                <div class="row">
+                    <div class="col-9">
+                        <span class="mr-5">Categoria: [[ resourceList.category.name ]]</span>
+                        <span class="mr-5" data-toggle="tooltip" data-placement="bottom"
+                            v-bind:title="hasAllEstimatedMinutes == true ? 'Tempo estimado.' : 'Alguns materiais não possuem tempo estimado'">
+                            <i v-if="hasAllEstimatedMinutes" class="fas fa-clock mr-1"></i>
+                            <i v-else class="fas fa-clock text-orange mr-1"></i>
+                            [[ friendlyMinutes(totalEstimatedMinutes) ]]
+                        </span>
+                        <span class="mr-5" data-toggle="tooltip" data-placement="bottom"
+                            title="Satisfação dos entusiastas">
+                            <i class="fas fa-heart mr-1"></i>
+                            [[ resourceList.relearnScore ]]%
+                        </span>
+                        <span class="mr-5" data-toggle="tooltip" data-placement="bottom"
+                            title="Número de entusiastas">
+                            <i class="fas fa-user-graduate mr-1"></i>
+                            [[ resourceList.nStudents ]]
+                        </span>
+                    </div>
+                    <div class="col-3">
+                        <div v-if="authenticatedUser.id != ''" class="text-right pr-3 mb-1">
+                            <!-- <span v-if="avgRating > 0" class="mr-4 text-muted"><i class="fas fa-star mr-1"></i>[[
+                                avgRating]]/5</span> -->
+                            <span v-if="isBookmarked" class="bookmark-icon"
+                                @click="removeBookmark($event, resourceList.id)"><i class="fas fa-bookmark "></i>
+                                Salvo</span>
+                            <span v-else class="bookmark-icon" @click="addBookmark($event, resourceList.id)"><i
+                                    class="far fa-bookmark"></i> Salvar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="resourceList.description != ''">
+                    <h3 class="mt-4"><b>Introdução</b></h3>
+                    <pre>[[resourceList.description]]</pre>
+                </div>
+
+                <div v-if="resourceList.requisites != ''" class="requisites-container mt-4">
+                    <h3><b>Público alvo / pré-requisitos</b></h3>
+                    <pre class="mb-2">[[resourceList.requisites]]</pre>
+                </div>
+
+                <h3 v-if="resources.length > 0" class="mt-4"><b>Materiais e orientações</b></h3>
+                <resource-item v-for="resource in resources" 
+                    v-bind:resource="resource"
+                    :resource-list="resourceList"
+                    v-bind:authenticated-user="authenticatedUser" 
+                    v-bind:key="resource.position"
+                    v-on:update-rating="updateRating">
+                </resource-item>
+            </div>
+
+            <div class="col-lg-3"></div>
+
+        </div>
+    </div>
+
+
+</div>
+
+<script src="{% static 'js/utils/time.js' %}"></script>
+<script src="{% static 'js/utils/bookmark.js' %}"></script>
+<script src="{% static 'js/specific/resourceList.js' %}"></script>
+
+
+{% endblock %}

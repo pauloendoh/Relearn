@@ -1,0 +1,37 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block title %}Caminhos salvos{% endblock %}
+
+{% block content %}
+<script>
+    var resourceLists = serializedDjangoToJsonList("{{ jsonResourceLists | escapejs }}");
+    var bookmarks = []
+</script>
+
+{% if jsonBookmarks %}
+<script> bookmarks = serializedDjangoToJsonList("{{ jsonBookmarks | escapejs }}"); </script>
+{% endif  %}
+
+
+<div v-cloak id="resource-lists" class="mt-5 container-fluid">
+        <div class="row">
+            <div class="col-lg-3"></div>
+
+            <div class="col-lg-6">
+            <h3><b>Caminhos salvos</b></h3>
+
+                <div class="rounded">
+                    <resource-list-summary v-for="resourceList in resourceLists" v-bind:resource-list="resourceList"
+                        v-bind:key="resourceList.id" v-bind:authenticated-user="authenticatedUser"
+                        v-bind:bookmarks="bookmarks" v-on:delete-list="deleteList">
+                    </resource-list-summary>
+                </div>
+            </div>
+
+            <div class="col-lg-3"></div>
+        </div>
+    </div>
+<script src="{% static 'js/resourceLists.js' %}"></script>
+
+{% endblock %}

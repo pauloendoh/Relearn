@@ -1,0 +1,150 @@
+{% load staticfiles %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="initial-scale=1, shrink-to-fit=no, width=device-width" name="viewport">
+    <title>{% block title %}Relearn - Redirected Learning{% endblock %}</title>
+    <link rel="shortcut icon" href="#">
+
+    <!-- Font Awesome -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.css" rel="stylesheet"> -->
+    <link href="{% static 'css/fontawesome.css' %}" rel="stylesheet">
+
+
+    <!-- Daemonite Material Bootstrap / jQuery -->
+    <link href="{% static 'css/material.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Bootstrap Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="{% static 'js/material.min.js' %}"></script>
+
+    <!-- Vue.js  -->
+    <script src="{% static 'js/vue.js' %}"></script>
+
+    <!-- Custom CSS -->
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custombootstrap.css' %}" rel="stylesheet">
+
+    <!-- Utils -->
+    <script src="{% static 'js/utils/django.js' %}"></script>
+    <script src="{% static 'js/utils/others.js' %}"></script>
+
+    {% include 'urls.html' %}
+    <script src="{% static 'js/utils/urls.js' %}"></script>
+</head>
+
+<body>
+    <script>
+        var authenticatedUser = { id: '', username: '' } 
+    </script>
+
+    {% if request.user.is_authenticated %}
+    <script> authenticatedUser = { id: '{{ request.user.id }}', username: '{{ request.user.username }}' } </script>
+    {% endif %}
+
+    <!-- Navbar -->
+    <nav v-cloak id="navbar" class="navbar navbar-expand-sm navbar-light bg-white px-0 fixed-top shadow-sm">
+        <div class="col-sm-3 col-6">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <i class="fas fa-bars pointer ml-5 mr-3" @click="toggleSidebar" style="
+            position: relative;
+            bottom: 2px;
+        "></i>
+            <a id="relearn-brand" href="{% url 'renderIndex' %}" class="navbar-brand">Relearn</a>
+        </div>
+        <div class="col-6">
+            <form action="{% url 'renderSearch' %}" method="GET" class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2 search-box" type="search" name="q"
+                    placeholder="O que você quer aprender?" aria-label="Search" autocomplete="off">
+            </form>
+        </div>
+
+        <div id="navbarTogglerDemo01" class="col-3 collapse navbar-collapse">
+
+            <ul class="navbar-nav mx-auto  mt-lg-0">
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <div class="btn-group">
+                        <button type="button" class="btn bg-color-primary text-white dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ request.user.username }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="{% url 'createResourceList' %}">Criar caminho</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                                href="{% url 'renderUserResourceLists' request.user.username %}">Perfil</a>
+                            <a class="dropdown-item" href="{% url 'renderBookmarked'  %}">Caminhos salvos</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'logout' %}">Sair <i
+                                    class="fas fa-sign-out-alt"></i></a>
+                        </div>
+                    </div>
+                </li>
+                {% else %}
+                <!-- v-for -->
+                <li v-for="link in links" class="nav-item active">
+                    <a v-if="link.onClick" class="nav-link" v-bind:href="link.href" v-bind:onClick="link.onClick">[[
+                        link.title ]]</a>
+                    <a v-else class="nav-link" v-bind:href="link.href">[[ link.title ]]</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="top-spacing"></div>
+    {% block content %}
+
+    <script>
+        var resourceLists = serializedDjangoToJsonList("{{ jsonResourceLists | escapejs }}");
+    </script>
+    {% if jsonBookmarks %}
+    <script>var bookmarks = serializedDjangoToJsonList("{{ jsonBookmarks | escapejs }}"); </script>
+    {% else  %}
+    <script>var bookmarks = []</script>
+    {% endif %}
+
+
+    <div v-cloak id="resource-lists" class="mt-5 container-fluid">
+        <div class="row">
+            <div class="col-lg-3"></div>
+
+            <div class="col-lg-6">
+                <div class="rounded">
+                    <resource-list-summary v-for="resourceList in resourceLists" v-bind:resource-list="resourceList"
+                        v-bind:key="resourceList.id" v-bind:authenticated-user="authenticatedUser"
+                        v-bind:bookmarks="bookmarks" v-on:delete-list="deleteList">
+                    </resource-list-summary>
+                </div>
+            </div>
+
+            <div class="col-lg-3"></div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/resourceLists.js' %}"></script>
+    {% endblock %}
+
+    {% include 'modals.html' %}
+
+
+
+    <!-- Vue.js files -->
+    <script src="{% static 'js/navbar.js' %}"></script>
+
+</body>
+
+</html>
