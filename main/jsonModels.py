@@ -66,9 +66,9 @@ def removeResources(jsResources):
 def createResource(jsResource):
     resourceList = ResourceList.objects.get(id=jsResource["resourceList"])
     try:
-        creator = User.objects.get(id=jsResource["creator"][0])
+        creator = User.objects.get(id=jsResource["creator"]["id"])
     except:
-        creator = User.objects.get(username=jsResource["creator"][0])
+        creator = User.objects.get(username=jsResource["creator"]["username"])
     newResource = Resource.objects.create(
         creator=creator,
         position=jsResource["position"],
