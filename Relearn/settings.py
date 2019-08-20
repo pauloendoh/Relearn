@@ -28,10 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'w*rka^+$8kzytb0x749n0e^r*6ts%i
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = [
-    # Uncomment before pushing for deploying
-    'immense-brook-32988.herokuapp.com' 
-    ]
+
 
 
 # Application definition
@@ -83,7 +80,7 @@ WSGI_APPLICATION = 'Relearn.wsgi.application'
 
 DATABASES = {
     'default': {
-        # Comment before pushing to deploy
+        # # Comment before pushing to deploy
         # 'ENGINE': 'django.db.backends.mysql', 
         # 'NAME': 'django',
         # 'USER': 'root',
@@ -92,6 +89,11 @@ DATABASES = {
         # 'PORT': '3306',
     }
 }
+
+ALLOWED_HOSTS = [
+    # Uncomment before pushing to deploy
+    'immense-brook-32988.herokuapp.com' 
+    ]
 
 
 # Password validation

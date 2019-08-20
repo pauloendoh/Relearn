@@ -9,7 +9,7 @@ var resourceListSummaryComponent = Vue.component('resource-list-summary', {
                     </a>
                 </div>
                 <div class='col-2'>
-                    <div v-if="authenticatedUser.id == resourceList.creator[0]" class="btn-group float-right ellipsis-button">
+                    <div v-if="authenticatedUser.id == resourceList.creator['id']" class="btn-group float-right ellipsis-button">
                         <i class="fas fa-ellipsis-v text-muted px-2" data-toggle="dropdown" aria-expanded="false"></i>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a :href="getEditListUrl(resourceList.id)" class='dropdown-item text-dark'>
@@ -26,9 +26,9 @@ var resourceListSummaryComponent = Vue.component('resource-list-summary', {
             
             <div>
                 <small>
-                    por <a :href="getUserListUrl(resourceList.id)">{{ resourceList.creator[1] }}</a>
-                    <i v-if="authenticatedUser.id == resourceList.creator[0] && resourceList.isPublic" class="fas fa-globe-americas ml-3"></i>
-                    <i v-else-if="authenticatedUser.id == resourceList.creator[0] && !resourceList.isPublic" class="fas fa-lock ml-3"></i>
+                    por <a :href="getUserListUrl(resourceList.id)">{{ resourceList.creator['username'] }}</a>
+                    <i v-if="authenticatedUser.id == resourceList.creator['id'] && resourceList.isPublic" class="fas fa-globe-americas ml-3"></i>
+                    <i v-else-if="authenticatedUser.id == resourceList.creator['id'] && !resourceList.isPublic" class="fas fa-lock ml-3"></i>
                 </small>
                 <div class="row mt-2">
                     <div class="col-8">
@@ -59,21 +59,21 @@ var resourceListSummaryComponent = Vue.component('resource-list-summary', {
         getListUrl: function (listId) {
             for (var i = 0; i < resourceLists.length; i++) {
                 if (resourceLists[i].id == listId) {
-                    return `/u/${resourceLists[i].creator[1]}/list/${listId}`
+                    return `/u/${resourceLists[i].creator['username']}/list/${listId}`
                 }
             }
         },
         getEditListUrl: function (listId) {
             for (var i = 0; i < resourceLists.length; i++) {
                 if (resourceLists[i].id == listId) {
-                    return `/u/${resourceLists[i].creator[1]}/list/${listId}/edit`
+                    return `/u/${resourceLists[i].creator['username']}/list/${listId}/edit`
                 }
             }
         },
         getUserListUrl: function (listId) {
             for (var i = 0; i < resourceLists.length; i++) {
                 if (resourceLists[i].id == listId) {
-                    return `/u/${resourceLists[i].creator[1]}/lists`
+                    return `/u/${resourceLists[i].creator['username']}/lists`
                 }
             }
         },
