@@ -79,14 +79,14 @@ WSGI_APPLICATION = 'Relearn.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql', 
-#         'NAME': 'django',
-#         'USER': 'root',
-#         'PASSWORD': config('MYSQL_PASSWORD'),
-#         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-#         'PORT': '3306',
-#     }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'django',
+        'USER': 'root',
+        # 'PASSWORD': config('MYSQL_PASSWORD'),
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
+    }
 }
 
 
