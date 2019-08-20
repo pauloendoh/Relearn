@@ -1,9 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib import auth
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Avg
 
 import json
+
+def natural_key(self):
+        return ({"id": self.id, "username": self.username})
+auth.models.User.add_to_class('natural_key', natural_key)
 
 class Category(models.Model):
     name = models.CharField(max_length=255, default="Outros", null=False)
