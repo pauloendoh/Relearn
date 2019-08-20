@@ -138,7 +138,10 @@ def renderSearch(request):
 
 @login_required
 def createResourceList(request):
-    othersCategory = Category.objects.get(name="Outros")
+    try:
+        othersCategory = Category.objects.get(name="Outros")
+    except:
+        othersCategory = Category.objects.create(name="Outros", parentCategory=None, position=999)
     resourceList = ResourceList.objects.create(
         creator=request.user, 
         category=othersCategory)

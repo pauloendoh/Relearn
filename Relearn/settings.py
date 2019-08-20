@@ -28,7 +28,10 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'w*rka^+$8kzytb0x749n0e^r*6ts%i
 # DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['immense-brook-32988.herokuapp.com']
+ALLOWED_HOSTS = [
+    
+    # 'immense-brook-32988.herokuapp.com' #Descomente quando em desenv
+    ]
 
 
 # Application definition
@@ -80,12 +83,13 @@ WSGI_APPLICATION = 'Relearn.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.mysql', 
-        # 'NAME': 'django',
-        # 'USER': 'root',
-        # 'PASSWORD': config('MYSQL_PASSWORD'),
-        # 'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        # 'PORT': '3306',
+        # Descomente isso quando em desenv
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'django',
+        'USER': 'root',
+        'PASSWORD': config('MYSQL_PASSWORD'),
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
