@@ -80,12 +80,12 @@ WSGI_APPLICATION = 'Relearn.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'django',
-        'USER': 'root',
+        # 'ENGINE': 'django.db.backends.mysql', 
+        # 'NAME': 'django',
+        # 'USER': 'root',
         # 'PASSWORD': config('MYSQL_PASSWORD'),
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
+        # 'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        # 'PORT': '3306',
     }
 }
 
