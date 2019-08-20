@@ -81,18 +81,18 @@ WSGI_APPLICATION = 'Relearn.wsgi.application'
 DATABASES = {
     'default': {
         # Comment before pushing to deploy
-        'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'django',
-        'USER': 'root',
-        'PASSWORD': config('MYSQL_PASSWORD'),
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
+        # 'ENGINE': 'django.db.backends.mysql', 
+        # 'NAME': 'django',
+        # 'USER': 'root',
+        # 'PASSWORD': config('MYSQL_PASSWORD'),
+        # 'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        # 'PORT': '3306',
     }
 }
 
 ALLOWED_HOSTS = [
     # Uncomment before pushing to deploy
-    # 'immense-brook-32988.herokuapp.com' 
+    'immense-brook-32988.herokuapp.com' 
     ]
 
 
