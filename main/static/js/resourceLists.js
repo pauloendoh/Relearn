@@ -119,7 +119,7 @@ var app = new Vue({
             event.preventDefault();
             if (confirm("Realmente deseja excluir essa lista de materiais?")) {
                 // Ajax to remove the resource list
-                fetch(getRemoveListUrl(listId))
+                fetch(urls.getRemoveListUrl(listId))
                     .then((resp) => resp.json()) // Transform the data into json
                     .then(function (jsonResponse) {
                         if (!jsonResponse["error"]) {

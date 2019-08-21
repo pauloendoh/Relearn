@@ -82,11 +82,11 @@
                             {{ request.user.username }}
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="{% url 'createResourceList' %}">Criar caminho</a>
+                            <a class="dropdown-item" href="{% url 'createResourceList' %}">Criar recomendações</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item"
                                 href="{% url 'renderUserResourceLists' request.user.username %}">Perfil</a>
-                            <a class="dropdown-item" href="{% url 'renderBookmarked'  %}">Caminhos salvos</a>
+                            <a class="dropdown-item" href="{% url 'renderBookmarked'  %}">Listas salvas</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}">Sair <i
                                     class="fas fa-sign-out-alt"></i></a>

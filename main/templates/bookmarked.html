@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% load staticfiles %}
 
-{% block title %}Caminhos salvos{% endblock %}
+{% block title %}Listas salvas{% endblock %}
 
 {% block content %}
 <script>
@@ -19,7 +19,7 @@
             <div class="col-lg-3"></div>
 
             <div class="col-lg-6">
-            <h3><b>Caminhos salvos</b></h3>
+            <h3><b>Listas salvas</b></h3>
 
                 <div class="rounded">
                     <resource-list-summary v-for="resourceList in resourceLists" v-bind:resource-list="resourceList"

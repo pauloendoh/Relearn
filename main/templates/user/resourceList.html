@@ -88,7 +88,7 @@
                     <div class="col-9">
                         <span class="mr-5">Categoria: [[ resourceList.category.name ]]</span>
                         <span class="mr-5" data-toggle="tooltip" data-placement="bottom"
-                            v-bind:title="hasAllEstimatedMinutes == true ? 'Tempo estimado.' : 'Alguns materiais não possuem tempo estimado'">
+                            v-bind:title="hasAllEstimatedMinutes == true ? 'Tempo estimado total' : 'Alguns materiais não possuem tempo estimado'">
                             <i v-if="hasAllEstimatedMinutes" class="fas fa-clock mr-1"></i>
                             <i v-else class="fas fa-clock text-orange mr-1"></i>
                             [[ friendlyMinutes(totalEstimatedMinutes) ]]

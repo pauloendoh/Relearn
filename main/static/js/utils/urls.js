@@ -1,3 +1,8 @@
+// Admin / Authenticate
+urls["admin"] = "/admin/";
+urls["createUser"] = "createUser";
+urls["logout"] = "/logout/";
+
 urls["addBookmark"] = function(listId){
     return `/ajax/addBookmark/${listId}`;
 } 
@@ -12,7 +17,7 @@ urls.getEditListUrl = function(username,listId){
     return `/u/${username}/list/${listId}/edit`
 }
 
-function getRemoveListUrl(listId){
+urls.getRemoveListUrl = function(listId){
     return `/deleteResourceList/${listId}`
 }
 

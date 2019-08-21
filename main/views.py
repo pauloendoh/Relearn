@@ -31,6 +31,9 @@ def renderUserResourceLists(request, username):
         "jsonResourceLists": "[]",
         "jsonBookmarks": "[]"
     }
+    if request.user.is_authenticated is False:
+        returns['SignUpForm'] = SignUpForm()
+    
 
     user = get_object_or_404(User, username=username)
     returns["user"] = user
@@ -77,6 +80,8 @@ def renderEditResourceList(request, username, listId):
 
 def renderResourceList(request, username, listId):
     returns = {}
+    if request.user.is_authenticated is False:
+        returns['SignUpForm'] = SignUpForm()
     resourceList = get_object_or_404(
         ResourceList, id=listId)
     if not resourceList.isPublic:
@@ -129,6 +134,8 @@ def renderBookmarked(request):
 
 def renderSearch(request):
     returns = {}
+    if request.user.is_authenticated is False:
+        returns['SignUpForm'] = SignUpForm()
     resourceLists = ResourceList.objects.filter(
         title__icontains=request.GET['q'])
     returns["jsonResourceLists"] = serialize(
