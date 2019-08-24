@@ -7,12 +7,20 @@
 {% block content %}
 <script>
     var resourceLists = serializedDjangoToJsonList("{{ jsonResourceLists | escapejs }}");
+    var profile = serializedDjangoToJsonList("{{ jsonProfile | escapejs }}");
 
 
 </script>
 {% if jsonBookmarks %}
 <script>var bookmarks = serializedDjangoToJsonList("{{ jsonBookmarks | escapejs }}"); </script>
 {% endif %}
+
+<div id="user-profile" class="mt-5">
+    [[ profile ]]
+</div>
+<script src="{% static 'js/specific/userProfile.js' %}"></script>
+
+
 <div v-cloak id="resource-lists" class="mt-5 container-fluid">
     <div class="row">
         <div class="col-lg-3"></div>
@@ -20,8 +28,8 @@
         <div class="col-lg-6">
             <div class="rounded">
                 <resource-list-summary v-for="resourceList in resourceLists" v-bind:resource-list="resourceList"
-                    v-bind:key="resourceList.id" v-bind:authenticated-user="authenticatedUser" v-bind:bookmarks="bookmarks"
-                    v-on:delete-list="deleteList">
+                    v-bind:key="resourceList.id" v-bind:authenticated-user="authenticatedUser"
+                    v-bind:bookmarks="bookmarks" v-on:delete-list="deleteList">
                 </resource-list-summary>
             </div>
         </div>

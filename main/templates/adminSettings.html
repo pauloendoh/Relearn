@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block title %}Configurações de Administrador{% endblock %}
+
+{% block content %}
+
+
+
+<script>
+    var csrfmiddlewaretoken = '{{ csrf_token }}';
+    var categories = JSON.parse("{{ jsonCategories | escapejs}}");
+</script>
+
+
+
+<div id="admin-settings" v-cloak>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-6">
+                <h3>Configurações de Administrador</h3>
+                <div class="bg-white rounded p-3 mt-3">
+                    Categorias
+                    <div>
+                        <div v-for="category in categories">
+                            [[ category.name ]]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                
+            </div>
+        </div>
+    </div>
+   
+</div>
+<script src="{% static 'js/specific/adminSettings.js' %}"></script>
+
+{% endblock %}

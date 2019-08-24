@@ -18,7 +18,7 @@
 
     var resourceList = serializedDjangoToJsonList("{{ jsonResourceList | escapejs}}")[0];
     var resources = serializedDjangoToJsonList("{{ jsonResources | escapejs}}");
-    var categories = JSON.parse("{{ jsonCategories | escapejs}}");
+    var categories = JSON.parse("{{ jsonCategories | escapejs}}")[0];
 
 </script>
 

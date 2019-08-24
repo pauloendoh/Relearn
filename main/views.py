@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.serializers import serialize, deserialize
 from django.forms import model_to_dict
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from main.models import ResourceList, Resource, Rating, BookmarkedList, Category
 
@@ -29,7 +29,8 @@ def renderIndex(request):
 def renderUserResourceLists(request, username):
     returns = {
         "jsonResourceLists": "[]",
-        "jsonBookmarks": "[]"
+        "jsonBookmarks": "[]", 
+        "jsonProfile": ""
     }
     if request.user.is_authenticated is False:
         returns['SignUpForm'] = SignUpForm()
@@ -49,7 +50,7 @@ def renderUserResourceLists(request, username):
     # jsonBookmarks
     if(request.user.is_authenticated):
         returns["jsonBookmarks"] = jsonModels.getBookmarks(user=request.user)
-
+    returns["jsonProfile"] = serialize('json', [user.profile])
     return render(request, 'user/userLists.html', returns)
 
 
@@ -142,6 +143,12 @@ def renderSearch(request):
         'json', resourceLists, use_natural_foreign_keys=True)
     return render(request, 'index.html', returns)
 
+@user_passes_test(lambda user: user.is_superuser)
+def renderAdminSettings(request):
+    returns = {
+        "jsonCategories": Category.getCategoryTreeJSON(Category)
+    }
+    return render(request, 'adminSettings.html', returns)
 
 @login_required
 def createResourceList(request):
@@ -201,7 +208,8 @@ def createUser(request):
     if request.method == 'POST':
         signUpData = SignUpForm(request.POST)
         if signUpData.is_valid():
-            signUpData.save()
+            user = signUpData.save()
+            user.createProfile()
             signUpData.login(request)
             jsonResult["result"] = "OK"
         else:

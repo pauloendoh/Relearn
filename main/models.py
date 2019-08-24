@@ -7,14 +7,41 @@ from django.db.models import Avg
 
 import json
 
+
 def natural_key(self):
-        return ({"id": self.id, "username": self.username})
+    return ({"id": self.id, "username": self.username})
+
+
 auth.models.User.add_to_class('natural_key', natural_key)
+
+# self = User
+
+
+def createProfile(self):
+    profile = Profile.objects.create(user=self, fullname=self.username)
+    return profile
+
+
+auth.models.User.add_to_class('createProfile', createProfile)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User, related_name="profile", on_delete=models.CASCADE)
+    fullname = models.TextField(null=False)
+    bio = models.TextField(null=True, default="")
+    website = models.TextField(null=True, default="")
+
+    def natural_key(self):
+        return {'username': self.user.username, 'fullname': self.fullname}
+
 
 class Category(models.Model):
     name = models.CharField(max_length=255, default="Outros", null=False)
-    parentCategory = models.ForeignKey('self', related_name='subcategories', null=True, on_delete=models.CASCADE)
-    position = models.IntegerField(default=1) # Position of the category in that subcategory
+    parentCategory = models.ForeignKey(
+        'self', related_name='subcategories', null=True, on_delete=models.CASCADE)
+    # Position of the category in that subcategory
+    position = models.IntegerField(default=1)
 
     def natural_key(self):
         subcategories = []
@@ -22,11 +49,11 @@ class Category(models.Model):
             subcategory = Category.natural_key(subcategory)
             subcategories.append(subcategories)
         return {'id': self.id, 'name': self.name, 'subcategories': subcategories}
-    
+
     def getCategoryTreeJSON(self):
         categoryTree = []
 
-        coreCategories = self.objects.filter(parentCategory=None)
+        coreCategories = Category.objects.filter(parentCategory=None)
         for coreCategory in coreCategories:
             objDict = {
                 'id': coreCategory.id,
@@ -41,7 +68,7 @@ class Category(models.Model):
             categoryTree.append(objDict)
         categoryTree = sorted(categoryTree, key=lambda k: k["position"])
         return json.dumps(categoryTree)
-    
+
     def getSubcategoriesDictList(self):
         dictList = []
         for subcategory in self.subcategories.all():
@@ -59,6 +86,7 @@ class Category(models.Model):
         dictList = sorted(dictList, key=lambda k: k["position"])
         return dictList
 
+
 class ResourceList(models.Model):
     creator = models.ForeignKey(
         User, related_name="resourceLists", on_delete=models.CASCADE)
@@ -69,11 +97,14 @@ class ResourceList(models.Model):
     isPublic = models.BooleanField(default=False)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(Category, related_name="resourceLists", on_delete=models.CASCADE)
-    nStudents = models.IntegerField(default=0) # Number of students that complted a resource from this list
-    relearnScore = models.FloatField(default=0) # Average rating from the students, in percentage
+    category = models.ForeignKey(
+        Category, related_name="resourceLists", on_delete=models.CASCADE)
+    # Number of students that complted a resource from this list
+    nStudents = models.IntegerField(default=0)
+    # Average rating from the students, in percentage
+    relearnScore = models.FloatField(default=0)
 
-    # Refreshes the nStudents and relearnScore 
+    # Refreshes the nStudents and relearnScore
     def calcRelearnScore(self):
         diffUser = []
         nRatings = 0
@@ -88,20 +119,22 @@ class ResourceList(models.Model):
                 if(rating.user not in diffUser):
                     diffUser.append(rating.user)
         self.nStudents = len(diffUser)
-       
+
         avgRating = round((((ratingSum/nRatings)-1)/2) * 100, 2)
         self.relearnScore = avgRating
 
-        print(self.relearnScore,self.nStudents, ratingSum, nRatings)
+        print(self.relearnScore, self.nStudents, ratingSum, nRatings)
         self.save()
 
     def getUserAvgRating(self, user):
         avgRating = 0
-        resources = Resource.objects.filter(resourceList = self)
-        userRatings = Rating.objects.filter(user = user, resourceList = self, rating__gte=0)
+        resources = Resource.objects.filter(resourceList=self)
+        userRatings = Rating.objects.filter(
+            user=user, resourceList=self, rating__gte=0)
         # I'm still not calculating with none types
         if(len(resources) > 0):
-            avgRating = round(sum(r.rating for r in userRatings) / float(len(resources)), 1)
+            avgRating = round(
+                sum(r.rating for r in userRatings) / float(len(resources)), 1)
 
         return avgRating
 
@@ -124,7 +157,7 @@ class Resource(models.Model):
     def calcAvgRating(self):
         self.avgRating = self.ratings.all().aggregate(Avg('rating')).get('rating__avg')
         self.votesCount = self.ratings.all().count()
-        self.save()            
+        self.save()
 
 
 class Rating(models.Model):
@@ -132,9 +165,13 @@ class Rating(models.Model):
         User, related_name="ratings", on_delete=models.CASCADE)
     resource = models.ForeignKey(
         Resource, related_name="ratings", on_delete=models.CASCADE)
-    resourceList = models.ForeignKey(ResourceList, related_name="ratings", on_delete=models.CASCADE)
+    resourceList = models.ForeignKey(
+        ResourceList, related_name="ratings", on_delete=models.CASCADE)
     rating = models.FloatField(null=True, blank=True)
 
+
 class BookmarkedList(models.Model):
-    resourceList = models.ForeignKey(ResourceList, related_name="bookmarked", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="bookmarked", on_delete=models.CASCADE)
+    resourceList = models.ForeignKey(
+        ResourceList, related_name="bookmarked", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name="bookmarked", on_delete=models.CASCADE)

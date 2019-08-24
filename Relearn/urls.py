@@ -9,6 +9,8 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')), 
     path('createUser', views.createUser, name='createUser'),
     path('logout', auth_views.LogoutView.as_view(next_page="renderIndex"), name='logout'),
+    path('admin/settings', views.renderAdminSettings, name='renderAdminSettings'),
+
 
     #Render
     path('', views.renderIndex, name='renderIndex'),
