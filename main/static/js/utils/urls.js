@@ -21,3 +21,6 @@ urls.getRemoveListUrl = function(listId){
     return `/deleteResourceList/${listId}`
 }
 
+urls.updateProfile = function(userId){
+    return `/updateProfile/${userId}`;
+}

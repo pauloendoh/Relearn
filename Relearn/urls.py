@@ -11,7 +11,6 @@ urlpatterns = [
     path('logout', auth_views.LogoutView.as_view(next_page="renderIndex"), name='logout'),
     path('admin/settings', views.renderAdminSettings, name='renderAdminSettings'),
 
-
     #Render
     path('', views.renderIndex, name='renderIndex'),
     path('u/<str:username>/lists', views.renderUserResourceLists, name='renderUserResourceLists'),
@@ -29,5 +28,8 @@ urlpatterns = [
     path('createResourceList', views.createResourceList, name='createResourceList'),
     path('deleteResourceList/<int:listId>', views.deleteResourceList, name="deleteResourceList"),
     path('u/<str:username>/list/<int:listId>/edit/addResource', views.addResource, name='addResource'),
+
+    # User profile
+    path('updateProfile/<int:userId>', views.updateProfile, name='updateProfile'),
 
 ]

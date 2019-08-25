@@ -7,7 +7,7 @@ from django.core.serializers import serialize, deserialize
 from django.forms import model_to_dict
 from django.contrib.auth.decorators import login_required, user_passes_test
 
-from main.models import ResourceList, Resource, Rating, BookmarkedList, Category
+from main.models import ResourceList, Resource, Rating, BookmarkedList, Category, Profile
 
 import json
 from main import jsonModels
@@ -294,3 +294,29 @@ def removeBookmark(request, listId):
         bookmark.delete()
         jsonResult["message"] = "Success"
     return JsonResponse(jsonResult)
+
+@login_required
+def updateProfile(request, userId):
+    ajaxReturn = newAjaxReturn()
+
+
+    if(request.user.id == userId):
+        profileInfo = json.loads(request.POST["jsInfo"])
+
+        profile = Profile.objects.get(user=request.user)
+        profile.fullname = profileInfo["fullname"]
+        profile.website = profileInfo["website"]
+        profile.bio = profileInfo["bio"]
+        profile.save()
+        
+        print(profileInfo)
+
+    return JsonResponse(ajaxReturn)
+
+# returns a dict with default 
+def newAjaxReturn():
+    return {
+        "code": 0,
+        "message": "",
+        "errors": []
+    }
