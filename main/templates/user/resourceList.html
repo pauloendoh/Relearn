@@ -82,7 +82,7 @@
                 <h3>
                     <b>[[resourceList.title]]</b>
                     <a v-if="authenticatedUser.id == resourceList.creator['id']"
-                        :href="getEditListUrl(authenticatedUser.username, resourceList.id)" class="edit-list-link">
+                        :href="renderEditResourceList(authenticatedUser.username, resourceList.id)" class="edit-list-link">
                         (Editar)
                     </a>
                 </h3>

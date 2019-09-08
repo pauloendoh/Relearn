@@ -12,7 +12,7 @@ var resourceListSummaryComponent = Vue.component('resource-list-summary', {
                     <div v-if="authenticatedUser.id == resourceList.creator['id']" class="btn-group float-right ellipsis-button">
                         <i class="fas fa-ellipsis-v text-muted px-2" data-toggle="dropdown" aria-expanded="false"></i>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a :href="getEditListUrl(resourceList.id)" class='dropdown-item text-dark'>
+                            <a :href="renderEditResourceList(resourceList.id)" class='dropdown-item text-dark'>
                                 Editar
                             </a>    
                             <a class="dropdown-item text-dark"
@@ -63,13 +63,7 @@ var resourceListSummaryComponent = Vue.component('resource-list-summary', {
                 }
             }
         },
-        getEditListUrl: function (listId) {
-            for (var i = 0; i < resourceLists.length; i++) {
-                if (resourceLists[i].id == listId) {
-                    return `/u/${resourceLists[i].creator['username']}/list/${listId}/edit`
-                }
-            }
-        },
+        renderEditResourceList: urls.renderEditResourceList,
         getUserListUrl: function (listId) {
             for (var i = 0; i < resourceLists.length; i++) {
                 if (resourceLists[i].id == listId) {

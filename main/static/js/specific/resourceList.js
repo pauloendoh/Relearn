@@ -5,7 +5,7 @@ var resourceItem = Vue.component('resource-item', {
             <div v-if="userIsCreator" class="btn-group">
                 <i class="fas fa-ellipsis-v text-muted px-2" data-toggle="dropdown" aria-expanded="false"></i>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" :href="getEditListUrl(resourceList.creator['username'], resourceList.id) + '#resource-' + resource.position" >
+                    <a class="dropdown-item" :href="renderEditResourceList(resourceList.creator['username'], resourceList.id) + '#resource-' + resource.position" >
                         Editar item
                     </a>
                 </div>
@@ -126,7 +126,7 @@ var resourceItem = Vue.component('resource-item', {
                 });
 
         },
-        getEditListUrl: urls.getEditListUrl,
+        renderEditResourceList: urls.renderEditResourceList,
         friendlyMinutes: friendlyMinutes,
 
     },
@@ -219,7 +219,7 @@ var vueResourceList = new Vue({
 
             this.sidebarIsOpen = this.window.width >= 990 ? true : false;
           },
-        getEditListUrl: urls.getEditListUrl,
+          renderEditResourceList: urls.renderEditResourceList,
         updateRating: function (event, resource) {
             var postData = {
                 csrfmiddlewaretoken: csrfmiddlewaretoken,
