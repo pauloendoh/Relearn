@@ -1,7 +1,7 @@
 var resourceItem = Vue.component('resource-item', {
     props: ['resource', 'resource-list', 'authenticated-user'],
     template: `
-        <div class='resource-item mt-3 bg-white border' :id="'resource-item-' + resource.position" >
+        <div class='resource-item rounded mt-3 bg-white shadow-sm border' :id="'resource-item-' + resource.position" >
             <div v-if="userIsCreator" class="btn-group">
                 <i class="fas fa-ellipsis-v text-muted px-2" data-toggle="dropdown" aria-expanded="false"></i>
                 <div class="dropdown-menu dropdown-menu-right">
@@ -14,31 +14,31 @@ var resourceItem = Vue.component('resource-item', {
                 <div  v-if="authenticatedUser.id != ''" class="div-rating-btn" >
                     <i v-if="resource.userRating == null" 
                         v-on:click="updateRating(resource, 0)"
-                        v-on:mouseover="showRatingOptions(resource)"
+                        v-on:mouseenter="showRatingOptions(resource)"
                         v-on:mouseleave="hideRatingOptions(resource)"
                         class="far fa-circle pointer rating-circle-icon"></i>
                     <i v-else-if="resource.userRating == 0" 
                     v-on:click="updateRating(resource, null)"
-                    v-on:mouseover="showRatingOptions(resource)"
+                    v-on:mouseenter="showRatingOptions(resource)"
                         v-on:mouseleave="hideRatingOptions(resource)"
                         class="far fa-check-circle pointer rating-circle-icon "></i>
                     <span v-else-if="resource.userRating == 1"
                         v-on:click="updateRating(resource, null)"
-                        v-on:mouseover="showRatingOptions(resource)"
+                        v-on:mouseenter="showRatingOptions(resource)"
                         v-on:mouseleave="hideRatingOptions(resource)"
                         class="pointer emoji-rating-span" >
                     ☹️
                     </span>
                     <span v-else-if="resource.userRating == 2"
                         v-on:click="updateRating(resource, null)"
-                        v-on:mouseover="showRatingOptions(resource)"
+                        v-on:mouseenter="showRatingOptions(resource)"
                         v-on:mouseleave="hideRatingOptions(resource)"
                         class="pointer emoji-rating-span">
                     😐
                     </span>
                     <span v-else-if="resource.userRating == 3"
                         v-on:click="updateRating(resource, null)"
-                        v-on:mouseover="showRatingOptions(resource)"
+                        v-on:mouseenter="showRatingOptions(resource)"
                         v-on:mouseleave="hideRatingOptions(resource)"
                         class="pointer emoji-rating-span">
                     😄
@@ -47,7 +47,7 @@ var resourceItem = Vue.component('resource-item', {
                     <transition name="fade">
                         <div v-if="resource.showRatingOptions == true"
                             class="rating-options shadow py-2 bg-white"
-                            v-on:mouseover="showRatingOptions(resource)"
+                            v-on:mouseenter="showRatingOptions(resource)"
                             v-on:mouseleave="hideRatingOptions(resource)">
                             <div v-on:click="updateRating(resource, 3)" class="bg-white p-2 rounded pointer rating-option">😄 Muito interessante!</div>
                             <div v-on:click="updateRating(resource, 2)" class="bg-white p-2 rounded pointer rating-option">😐 OK</div>
@@ -82,44 +82,50 @@ var resourceItem = Vue.component('resource-item', {
             </div>
         </div>
     `,
+
     computed: {
-        userIsCreator: function(){
-            if(this.authenticatedUser.id == this.resourceList.creator['id'])
+        userIsCreator: function () {
+            if (this.authenticatedUser.id == this.resourceList.creator['id'])
                 return true;
             return false;
         },
     },
+
     methods: {
-        
+
         autogrow: function (event) {
             event.target.style.height = "50px";
             event.target.style.height = (event.target.scrollHeight) + "px";
-        }, 
-        showRatingOptions: function(resource){
-            resource.showRatingOptions = true;
-            resource.hideRatingOptions = false;
         },
-        hideRatingOptions: function(resource){
+        showRatingOptions: function (resource) {
+            resource.hideRatingOptions = false;
+            setTimeout(function () {
+                if (resource.hideRatingOptions == false)
+                    resource.showRatingOptions = true;
+            }, 500)
+        },
+        hideRatingOptions: function (resource) {
             resource.hideRatingOptions = true;
-            setTimeout(function(){
-                if(resource.hideRatingOptions == true)
+            setTimeout(function () {
+                if (resource.hideRatingOptions == true)
                     resource.showRatingOptions = false;
             }, 500)
-        }, 
-        updateRating: function(resource, newRating){
+        },
+        updateRating: function (resource, newRating) {
             resource.userRating = newRating;
             var postData = {
                 csrfmiddlewaretoken: csrfmiddlewaretoken,
                 jsResource: JSON.stringify(resource)
             };
+            console.log(postData);
             $.post(urls.updateRating, postData)
                 .done(function (response) {
-                    if(response.message =="OK"){
-                        vueResourceList.avgRating = response.avgRating; 
+                    if (response.message == "OK") {
+                        vueResourceList.avgRating = response.avgRating;
                     }
                 });
 
-        }, 
+        },
         getEditListUrl: urls.getEditListUrl,
         friendlyMinutes: friendlyMinutes,
 
@@ -144,57 +150,75 @@ var vueResourceList = new Vue({
         resourceList: resourceList,
         resources: resources,
         authenticatedUser: authenticatedUser,
+        
         isBookmarked: isBookmarked,
         ratings: ratings,
         avgRating: avgRating,
 
         // Sidebar
         sidebarIsOpen: true,
+        window: {
+            width: 0,
+            height: 0
+        }
+    },
+    created() {
+        window.addEventListener('resize', this.handleResize)
+        this.handleResize();
+    },
+    destroyed() {
+        window.removeEventListener('resize', this.handleResize)
     },
     computed: {
-        hasPaidResources: function(){
+        hasPaidResources: function () {
             var has = false;
-            vueResourceList.resources.forEach(function(resource){
-                if(resource.isPaid){
+            vueResourceList.resources.forEach(function (resource) {
+                if (resource.isPaid) {
                     has = true;
                 }
             })
             return has;
         },
-        totalEstimatedMinutes: function(){
+        totalEstimatedMinutes: function () {
             var total = 0;
-            this.resources.forEach(function(resource){
-                if(resource.estimateMinutes != null)
+            this.resources.forEach(function (resource) {
+                if (resource.estimateMinutes != null)
                     total += resource.estimateMinutes;
             })
             return total;
         },
-        hasAllEstimatedMinutes: function(){
+        hasAllEstimatedMinutes: function () {
             var has = true;
-            this.resources.forEach(function(resource){
-                if(resource.estimateMinutes > 0 == false ){
+            this.resources.forEach(function (resource) {
+                if (resource.estimateMinutes > 0 == false) {
                     has = false;
                     return;
                 }
             });
             return has;
         },
-        nConcluded: function(){
+        nConcluded: function () {
             var n = 0;
-            this.resources.forEach(function(resource){
-                if(resource.userRating != null)
+            this.resources.forEach(function (resource) {
+                if (resource.userRating != null)
                     n++;
             });
             return n;
         },
-        conclusionPct: function(){
+        conclusionPct: function () {
             var pct = 0;
             var nResources = this.resources.length;
-            pct = (Math.floor((this.nConcluded/nResources) * 100));
+            pct = (Math.floor((this.nConcluded / nResources) * 100));
             return pct;
         }
     },
     methods: {
+        handleResize() {
+            this.window.width = window.innerWidth;
+            this.window.height = window.innerHeight;
+
+            this.sidebarIsOpen = this.window.width >= 990 ? true : false;
+          },
         getEditListUrl: urls.getEditListUrl,
         updateRating: function (event, resource) {
             var postData = {
@@ -204,8 +228,8 @@ var vueResourceList = new Vue({
             $.post(urls.updateRating, postData)
                 .done(function (response) {
 
-                    if(response.message =="OK"){
-                        vueResourceList.avgRating = response.avgRating; 
+                    if (response.message == "OK") {
+                        vueResourceList.avgRating = response.avgRating;
                         console.log(vueResourceList.avgRating)
                     }
                 });
@@ -213,21 +237,21 @@ var vueResourceList = new Vue({
         addBookmark: addBookmark,
         removeBookmark: removeBookmark,
         friendlyMinutes: friendlyMinutes,
-        goToResourcePosition: function(hashtagAnchor){
+        goToResourcePosition: function (hashtagAnchor) {
             goToId(hashtagAnchor);
             $(hashtagAnchor).css({
-                "box-shadow": "0px 0px 30px -9px rgba(0,163,155,1)",
                 "transition": "0.5s"
             });
-            setTimeout(function(){
-                $(hashtagAnchor).css("box-shadow", "none");
+            $(hashtagAnchor).addClass('highlighted');
+            setTimeout(function () {
+                $(hashtagAnchor).removeClass("highlighted");
             }, 1000)
-           
-            
+
+
         },
     },
-    mounted: function(){
-        $(function() {
+    mounted: function () {
+        $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         })
 

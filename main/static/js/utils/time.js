@@ -5,7 +5,7 @@ function friendlyMinutes(minutes){
         result = minutes + " min";
     else {
         var hours = Math.floor(minutes/60);
-        var remainderMins = minutes % hours;
+        var remainderMins = minutes % (hours * 60);
         if(remainderMins < 10)
             remainderMins = "0" + remainderMins;
         result = hours + ":" + remainderMins + "h"

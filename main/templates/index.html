@@ -38,13 +38,15 @@
     <script src="{% static 'js/utils/django.js' %}"></script>
     <script src="{% static 'js/utils/others.js' %}"></script>
 
+    <!-- URLs -->
     {% include 'urls.html' %}
     <script src="{% static 'js/utils/urls.js' %}"></script>
 </head>
 
 <body>
     <script>
-        var authenticatedUser = { id: '', username: '' } 
+        var authenticatedUser = { id: '', username: '' };
+        var csrfmiddlewaretoken = '{{ csrf_token }}';
     </script>
 
     {% if request.user.is_authenticated %}
@@ -53,25 +55,27 @@
 
     <!-- Navbar -->
     <nav v-cloak id="navbar" class="navbar navbar-expand-sm navbar-light bg-white px-0 fixed-top shadow-sm">
-        <div class="col-sm-3 col-6">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
-                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-            <i class="fas fa-bars pointer ml-5 mr-3" @click="toggleSidebar" style="
+        <div class="col-sm-3 col-4 pr-0">
+            <i class="fas fa-bars pointer ml-lg-5 mr-3" @click="toggleSidebar" style="
             position: relative;
             bottom: 2px;
         "></i>
-            <a id="relearn-brand" href="{% url 'renderIndex' %}" class="navbar-brand">Relearn</a>
+            <a id="relearn-brand" href="{% url 'renderIndex' %}" class="navbar-brand ml-0">Relearn</a>
         </div>
-        <div class="col-6">
-            <form action="{% url 'renderSearch' %}" method="GET" class="form-inline my-2 my-lg-0">
+        <div class="col-sm-6 col-3">
+            <form v-if="window.width >= 575" action="{% url 'renderSearch' %}" method="GET" class="form-inline my-2 my-lg-0">
                 <input class="form-control mr-sm-2 search-box" type="search" name="q"
                     placeholder="O que você quer aprender?" aria-label="Search" autocomplete="off">
             </form>
+
+            <div v-else class="d-flex justify-content-end">
+                <button class="round-btn" v-on:click="showSearchbox(!searchBoxIsShowing)">
+                        <i  class="fas fa-search"></i>
+                </button>
+            </div>
         </div>
 
-        <div id="navbarTogglerDemo01" class="col-3 collapse navbar-collapse">
+        <div class="col-sm-3 col-5">
 
             <ul class="navbar-nav mx-auto  mt-lg-0">
                 {% if request.user.is_authenticated %}
@@ -103,6 +107,16 @@
                 {% endif %}
             </ul>
         </div>
+
+        <!-- If you expand the search box -->
+        <template v-if="searchBoxIsShowing">
+            <div class="w-100 p-2">
+                    <form action="{% url 'renderSearch' %}" method="GET" class="mb-0">
+                            <input id="minimized-searchbox" class="form-control" type="search" name="q"
+                                placeholder="O que você quer aprender?" aria-label="Search" autocomplete="off">
+                        </form>
+            </div>
+        </template>
     </nav>
 
     <div class="top-spacing"></div>

@@ -8,7 +8,6 @@
 <script>
     var resourceLists = serializedDjangoToJsonList("{{ jsonResourceLists | escapejs }}");
     var profileInfo = serializedDjangoToJsonList("{{ jsonProfile | escapejs }}")[0];
-    var csrfmiddlewaretoken = '{{ csrf_token }}';
 
 </script>
 {% if jsonBookmarks %}

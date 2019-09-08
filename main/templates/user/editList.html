@@ -14,7 +14,6 @@
     urls["deleteResourceList"] = "{% url 'deleteResourceList' resourceList.id %}";
     urls["renderUserResourceLists"] = "{% url 'renderUserResourceLists' request.user.username %}"
 
-    var csrfmiddlewaretoken = '{{ csrf_token }}';
 
     var resourceList = serializedDjangoToJsonList("{{ jsonResourceList | escapejs}}")[0];
     var resources = serializedDjangoToJsonList("{{ jsonResources | escapejs}}");
@@ -92,7 +91,7 @@
         </div>
     </div>
 
-    <div class="fixed-bottom container-fluid bg-white shadow p-2">
+    <div class="fixed-bottom container-fluid bg-white shadow-sm p-2">
         <div class="row">
             <div class="col-lg-3"></div>
 

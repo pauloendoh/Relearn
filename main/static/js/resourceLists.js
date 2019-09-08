@@ -1,7 +1,7 @@
 var resourceListSummaryComponent = Vue.component('resource-list-summary', {
     props: ['resource-list', 'authenticated-user', 'bookmarks'],
     template: `
-        <div class='resource-list-summary p-3'>
+        <div class='resource-list-summary shadow-sm p-3'>
             <div class='row'>
                 <div class='col-10'>
                     <a :href="getListUrl(resourceList.id)" class='link-title'>

@@ -1,5 +1,41 @@
 <script>
     var urls = {
-        
+        // Admin / Authenticate
+        admin: '/admin', 
+        accounts: '/accounts', 
+        createUser: '/createUser', 
+        login: '/accounts/login', 
+        logout: '/logout', 
+        renderAdminSettings: '/admin/settings', 
+
+        // Render
+        renderIndex: '/',
+        renderUserResourceLists: function(username){ 
+            return `/u/${username}/lists`
+        }, 
+        renderEditResourceList: function(username, listId){
+            return `/u/${username}/list/${listId}/edit`
+        }, 
+        renderResourceList: function(username, listId){
+            return `/u/${username}/list/${listId}`
+        }, 
+        renderBookmarked: '/bookmarked', 
+        renderSearch: "/search", 
+
+        // Ajax/JSON
+        updateRating: '/ajax/updateRating', 
+        addBookmark: function(listId){
+            return `/ajax/addBookmark/${listId}`
+        }, 
+        removeBookmark: (listId) => `/ajax/removeBookmark/${listId}`, 
+
+        // Others
+        createResourceList: '/createResourceList',
+        deleteResourceList: (listId) => `/deleteResourceList/${listId}`,
+        addResource: (username, listId) => `/u/${username}/list/${listId}/edit/addResource`,
+
+        // User profile
+        updateProfile: (userId) => `/updateProfile/${userId}`, 
+
     }
 </script>

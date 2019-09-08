@@ -5,7 +5,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     #Admin / Authenticate
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls), # Can't use 'name=""'
     path('accounts/', include('django.contrib.auth.urls')), 
     path('createUser', views.createUser, name='createUser'),
     path('logout', auth_views.LogoutView.as_view(next_page="renderIndex"), name='logout'),
